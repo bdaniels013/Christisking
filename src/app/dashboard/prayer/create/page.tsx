@@ -1,28 +1,28 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { ArrowLeft, Heart, AlertCircle } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { AlertCircle, ArrowLeft, Globe, Heart, User, Users } from 'lucide-react'
 
 export default function CreatePrayerPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    title: &apos;&apos;,
-    content: &apos;&apos;,
+    title: '',
+    content: '',
     is_urgent: false,
     is_public: true,
-    circle_id: &apos;&apos;
+    circle_id: ''
   })
-  const [circles, setCircles] = useState<any[]>([])
+  const [_circles, setCircles] = useState<any[]>([])
 
   useEffect(() => {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -36,14 +36,14 @@ export default function CreatePrayerPage() {
   const loadCircles = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;circle_members&apos;)
-        .select(&apos;circle:circles(id, name)&apos;)
-        .eq(&apos;user_id&apos;, user?.id)
+        .from('circle_members')
+        .select('circle:circles(id, name)')
+        .eq('user_id', user?.id)
 
       if (error) throw error
       setCircles(data?.map(item => item.circle) || [])
-    } catch (error) {
-      console.error(&apos;Error loading circles:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
@@ -54,7 +54,7 @@ export default function CreatePrayerPage() {
     setLoading(true)
     try {
       const { error } = await supabase
-        .from(&apos;prayer_requests&apos;)
+        .from('prayer_requests')
         .insert({
           title: formData.title,
           content: formData.content,
@@ -62,15 +62,15 @@ export default function CreatePrayerPage() {
           circle_id: formData.is_public ? null : formData.circle_id,
           is_public: formData.is_public,
           is_urgent: formData.is_urgent,
-          status: &apos;active&apos;
+          status: 'active'
         })
 
       if (error) throw error
 
-      router.push(&apos;/dashboard/prayer&apos;)
-    } catch (error) {
-      console.error(&apos;Error creating prayer request:&apos;, error)
-      alert(&apos;Error creating prayer request. Please try again.&apos;)
+      router.push('/dashboard/prayer')
+    } catch (_error) {
+      console.error('Error:', _error)
+      alert('Error creating prayer request. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -202,7 +202,7 @@ export default function CreatePrayerPage() {
                     required={!formData.is_public}
                   >
                     <option value="">Choose a circle</option>
-                    {circles.map((circle) => (
+                    {_circles.map((circle) => (
                       <option key={circle.id} value={circle.id}>
                         {circle.name}
                       </option>
@@ -227,7 +227,7 @@ export default function CreatePrayerPage() {
                 className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
               >
                 {loading ? (
-                  &apos;Creating...&apos;
+                  'Creating...'
                 ) : (
                   <>
                     <Heart className="w-4 h-4 mr-2" />

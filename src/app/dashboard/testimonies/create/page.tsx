@@ -1,21 +1,21 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { ArrowLeft, Upload, X } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { ArrowLeft, Globe, Lock, Star, Upload, User, Users, Video, X } from 'lucide-react'
 
 export default function CreateTestimonyPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    title: &apos;&apos;,
-    content: &apos;&apos;,
-    visibility: &apos;public&apos;,
-    circle_id: &apos;&apos;
+    title: '',
+    content: '',
+    visibility: 'public',
+    circle_id: ''
   })
-  const [circles, setCircles] = useState<any[]>([])
+  const [_circles, setCircles] = useState<any[]>([])
   const [files, setFiles] = useState<File[]>([])
   const [uploading, setUploading] = useState(false)
 
@@ -23,7 +23,7 @@ export default function CreateTestimonyPage() {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -37,14 +37,14 @@ export default function CreateTestimonyPage() {
   const loadCircles = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;circle_members&apos;)
-        .select(&apos;circle:circles(id, name)&apos;)
-        .eq(&apos;user_id&apos;, user?.id)
+        .from('circle_members')
+        .select('circle:circles(id, name)')
+        .eq('user_id', user?.id)
 
       if (error) throw error
       setCircles(data?.map(item => item.circle) || [])
-    } catch (error) {
-      console.error(&apos;Error loading circles:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
@@ -59,19 +59,19 @@ export default function CreateTestimonyPage() {
 
   const uploadFiles = async (files: File[]) => {
     const uploadPromises = files.map(async (file) => {
-      const fileExt = file.name.split(&apos;.&apos;).pop()
+      const fileExt = file.name.split('.').pop()
       const fileName = `${user.id}/${Date.now()}.${fileExt}`
       
       const { data, error } = await supabase.storage
-        .from(&apos;testimonies&apos;)
+        .from('testimonies')
         .upload(fileName, file)
 
       if (error) throw error
 
       return {
         url: data.path,
-        type: file.type.startsWith(&apos;video/&apos;) ? &apos;video&apos; : 
-              file.type.startsWith(&apos;image/&apos;) ? &apos;image&apos; : &apos;other&apos;
+        type: file.type.startsWith('video/') ? 'video' : 
+              file.type.startsWith('image/') ? 'image' : 'other'
       }
     })
 
@@ -96,12 +96,12 @@ export default function CreateTestimonyPage() {
       }
 
       const { error } = await supabase
-        .from(&apos;testimonies&apos;)
+        .from('testimonies')
         .insert({
           title: formData.title,
           content: formData.content,
           author_id: user.id,
-          circle_id: formData.visibility === &apos;circle&apos; ? formData.circle_id : null,
+          circle_id: formData.visibility === 'circle' ? formData.circle_id : null,
           visibility: formData.visibility,
           media_urls: mediaUrls,
           media_types: mediaTypes
@@ -109,10 +109,10 @@ export default function CreateTestimonyPage() {
 
       if (error) throw error
 
-      router.push(&apos;/dashboard/testimonies&apos;)
-    } catch (error) {
-      console.error(&apos;Error creating testimony:&apos;, error)
-      alert(&apos;Error creating testimony. Please try again.&apos;)
+      router.push('/dashboard/testimonies')
+    } catch (_error) {
+      console.error('Error:', _error)
+      alert('Error creating testimony. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -169,7 +169,7 @@ export default function CreateTestimonyPage() {
                 onChange={(e) => setFormData({ ...formData, content: e.target.value })}
                 rows={8}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                placeholder="Share your story of faith, how God has worked in your life, or what you&apos;ve learned on your spiritual journey..."
+                placeholder="Share your story of faith, how God has worked in your life, or what you've learned on your spiritual journey..."
                 required
               />
             </div>
@@ -208,7 +208,7 @@ export default function CreateTestimonyPage() {
                   {files.map((file, index) => (
                     <div key={index} className="relative group">
                       <div className="aspect-square bg-gray-100 rounded-lg overflow-hidden">
-                        {file.type.startsWith(&apos;image/&apos;) ? (
+                        {file.type.startsWith('image/') ? (
                           <img
                             src={URL.createObjectURL(file)}
                             alt="Preview"
@@ -244,7 +244,7 @@ export default function CreateTestimonyPage() {
                     type="radio"
                     name="visibility"
                     value="public"
-                    checked={formData.visibility === &apos;public&apos;}
+                    checked={formData.visibility === 'public'}
                     onChange={(e) => setFormData({ ...formData, visibility: e.target.value })}
                     className="mr-3"
                   />
@@ -260,7 +260,7 @@ export default function CreateTestimonyPage() {
                     type="radio"
                     name="visibility"
                     value="circle"
-                    checked={formData.visibility === &apos;circle&apos;}
+                    checked={formData.visibility === 'circle'}
                     onChange={(e) => setFormData({ ...formData, visibility: e.target.value })}
                     className="mr-3"
                   />
@@ -276,7 +276,7 @@ export default function CreateTestimonyPage() {
                     type="radio"
                     name="visibility"
                     value="private"
-                    checked={formData.visibility === &apos;private&apos;}
+                    checked={formData.visibility === 'private'}
                     onChange={(e) => setFormData({ ...formData, visibility: e.target.value })}
                     className="mr-3"
                   />
@@ -289,7 +289,7 @@ export default function CreateTestimonyPage() {
               </div>
 
               {/* Circle Selection */}
-              {formData.visibility === &apos;circle&apos; && (
+              {formData.visibility === 'circle' && (
                 <div className="mt-4">
                   <label htmlFor="circle" className="block text-sm font-medium text-gray-700 mb-2">
                     Select Circle
@@ -302,7 +302,7 @@ export default function CreateTestimonyPage() {
                     required
                   >
                     <option value="">Choose a circle</option>
-                    {circles.map((circle) => (
+                    {_circles.map((circle) => (
                       <option key={circle.id} value={circle.id}>
                         {circle.name}
                       </option>
@@ -332,7 +332,7 @@ export default function CreateTestimonyPage() {
                     Uploading...
                   </>
                 ) : loading ? (
-                  &apos;Creating...&apos;
+                  'Creating...'
                 ) : (
                   <>
                     <Star className="w-4 h-4 mr-2" />

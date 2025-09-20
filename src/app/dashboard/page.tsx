@@ -1,9 +1,9 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { Heart, BookOpen, Church, LogOut, Cross, Bell } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { Bell, BookOpen, Calendar, Church, Cross, Heart, LogOut, Plus, Settings, Star, User, Users } from 'lucide-react'
 
 export default function Dashboard() {
   const router = useRouter()
@@ -20,7 +20,7 @@ export default function Dashboard() {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -37,7 +37,7 @@ export default function Dashboard() {
         setUser(session.user)
         loadStats()
       } else {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
       }
     })
 
@@ -47,10 +47,10 @@ export default function Dashboard() {
   const loadStats = async () => {
     try {
       const [circlesResult, testimoniesResult, prayersResult, eventsResult] = await Promise.all([
-        supabase.from(&apos;circles&apos;).select(&apos;id&apos;, { count: &apos;exact&apos; }),
-        supabase.from(&apos;testimonies&apos;).select(&apos;id&apos;, { count: &apos;exact&apos; }),
-        supabase.from(&apos;prayer_requests&apos;).select(&apos;id&apos;, { count: &apos;exact&apos; }),
-        supabase.from(&apos;events&apos;).select(&apos;id&apos;, { count: &apos;exact&apos; })
+        supabase.from('circles').select('id', { count: 'exact' }),
+        supabase.from('testimonies').select('id', { count: 'exact' }),
+        supabase.from('prayer_requests').select('id', { count: 'exact' }),
+        supabase.from('events').select('id', { count: 'exact' })
       ])
 
       setStats({
@@ -59,14 +59,14 @@ export default function Dashboard() {
         prayers: prayersResult.count || 0,
         events: eventsResult.count || 0
       })
-    } catch (error) {
-      console.error(&apos;Error loading stats:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push(&apos;/&apos;)
+    router.push('/')
   }
 
   if (loading) {
@@ -102,11 +102,11 @@ export default function Dashboard() {
               <div className="flex items-center space-x-2">
                 <div className="w-8 h-8 bg-red-100 rounded-full flex items-center justify-center">
                   <span className="text-sm font-medium text-red-600">
-                    {user?.user_metadata?.first_name?.[0] || user?.email?.[0] || &apos;U&apos;}
+                    {user?.user_metadata?.first_name?.[0] || user?.email?.[0] || 'U'}
                   </span>
                 </div>
                 <span className="text-sm text-gray-700">
-                  {user?.user_metadata?.first_name || user?.email?.split(&apos;@&apos;)[0] || &apos;User&apos;}
+                  {user?.user_metadata?.first_name || user?.email?.split('@')[0] || 'User'}
                 </span>
               </div>
               <button
@@ -125,7 +125,7 @@ export default function Dashboard() {
         {/* Welcome Section */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900">
-            Welcome back, {user?.user_metadata?.first_name || &apos;Friend&apos;}!
+            Welcome back, {user?.user_metadata?.first_name || 'Friend'}!
           </h1>
           <p className="text-gray-600 mt-2">
             Continue your journey of faith and community
@@ -186,7 +186,7 @@ export default function Dashboard() {
         {/* Quick Actions */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {/* Circles */}
-          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(&apos;/dashboard/circles&apos;)}>
+          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/dashboard/circles')}>
             <div className="flex items-center mb-4">
               <div className="p-3 bg-blue-100 rounded-lg">
                 <Users className="w-6 h-6 text-blue-600" />
@@ -207,7 +207,7 @@ export default function Dashboard() {
           </div>
 
           {/* Testimonies */}
-          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(&apos;/dashboard/testimonies&apos;)}>
+          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/dashboard/testimonies')}>
             <div className="flex items-center mb-4">
               <div className="p-3 bg-yellow-100 rounded-lg">
                 <Star className="w-6 h-6 text-yellow-600" />
@@ -228,7 +228,7 @@ export default function Dashboard() {
           </div>
 
           {/* Prayer */}
-          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(&apos;/dashboard/prayer&apos;)}>
+          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/dashboard/prayer')}>
             <div className="flex items-center mb-4">
               <div className="p-3 bg-red-100 rounded-lg">
                 <Heart className="w-6 h-6 text-red-600" />
@@ -249,7 +249,7 @@ export default function Dashboard() {
           </div>
 
           {/* Events */}
-          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(&apos;/dashboard/events&apos;)}>
+          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/dashboard/events')}>
             <div className="flex items-center mb-4">
               <div className="p-3 bg-green-100 rounded-lg">
                 <Calendar className="w-6 h-6 text-green-600" />
@@ -270,7 +270,7 @@ export default function Dashboard() {
           </div>
 
           {/* Churches */}
-          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(&apos;/dashboard/churches&apos;)}>
+          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/dashboard/churches')}>
             <div className="flex items-center mb-4">
               <div className="p-3 bg-purple-100 rounded-lg">
                 <Church className="w-6 h-6 text-purple-600" />
@@ -291,7 +291,7 @@ export default function Dashboard() {
           </div>
 
           {/* Reading */}
-          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push(&apos;/dashboard/reading&apos;)}>
+          <div className="bg-white rounded-xl shadow p-6 hover:shadow-lg transition-shadow cursor-pointer" onClick={() => router.push('/dashboard/reading')}>
             <div className="flex items-center mb-4">
               <div className="p-3 bg-indigo-100 rounded-lg">
                 <BookOpen className="w-6 h-6 text-indigo-600" />

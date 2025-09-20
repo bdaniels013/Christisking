@@ -1,9 +1,9 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { BookOpen } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { BookOpen, Calendar, Plus } from 'lucide-react'
 
 export default function ReadingPage() {
   const router = useRouter()
@@ -11,13 +11,13 @@ export default function ReadingPage() {
   const [plans, setPlans] = useState<any[]>([])
   const [myPlans, setMyPlans] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState(&apos;all&apos;) // all, my, public
+  const [filter, setFilter] = useState('all') // all, my, public
 
   useEffect(() => {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -32,26 +32,26 @@ export default function ReadingPage() {
   const loadPlans = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;reading_plans&apos;)
+        .from('reading_plans')
         .select(`
           *,
           created_by_user:users(first_name, last_name),
           assignments:reading_plan_assignments(count)
         `)
-        .eq(&apos;is_public&apos;, true)
-        .order(&apos;created_at&apos;, { ascending: false })
+        .eq('is_public', true)
+        .order('created_at', { ascending: false })
 
       if (error) throw error
       setPlans(data || [])
-    } catch (error) {
-      console.error(&apos;Error loading plans:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const loadMyPlans = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;reading_plan_assignments&apos;)
+        .from('reading_plan_assignments')
         .select(`
           plan:reading_plans(
             id, name, description, duration_days,
@@ -60,7 +60,7 @@ export default function ReadingPage() {
           start_date,
           progress:reading_progress(count)
         `)
-        .eq(&apos;user_id&apos;, user?.id)
+        .eq('user_id', user?.id)
 
       if (error) throw error
       setMyPlans(data?.map(item => ({
@@ -68,36 +68,36 @@ export default function ReadingPage() {
         assignment: item,
         progress_count: item.progress?.[0]?.count || 0
       })) || [])
-    } catch (error) {
-      console.error(&apos;Error loading my plans:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const joinPlan = async (planId: string) => {
     try {
       const { error } = await supabase
-        .from(&apos;reading_plan_assignments&apos;)
+        .from('reading_plan_assignments')
         .insert({
           plan_id: planId,
           user_id: user.id,
-          start_date: new Date().toISOString().split(&apos;T&apos;)[0]
+          start_date: new Date().toISOString().split('T')[0]
         })
 
       if (error) throw error
       loadMyPlans()
-    } catch (error) {
-      console.error(&apos;Error joining plan:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
-  const getProgressPercentage = (plan: any // eslint-disable-line @typescript-eslint/no-explicit-any // eslint-disable-line @typescript-eslint/no-explicit-any) => {
+  const getProgressPercentage = (plan: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
     if (!plan.assignment) return 0
     const daysPassed = Math.floor((new Date().getTime() - new Date(plan.assignment.start_date).getTime()) / (1000 * 60 * 60 * 24))
     const totalDays = plan.duration_days
     return Math.min(Math.max((daysPassed / totalDays) * 100, 0), 100)
   }
 
-  const filteredPlans = filter === &apos;my&apos; ? myPlans : plans
+  const filteredPlans = filter === 'my' ? myPlans : plans
 
   if (loading) {
     return (
@@ -118,10 +118,10 @@ export default function ReadingPage() {
           <div className="flex justify-between items-center">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">Reading Plans</h1>
-              <p className="text-gray-600">Grow in your understanding of God&apos;s word</p>
+              <p className="text-gray-600">Grow in your understanding of God's word</p>
             </div>
             <button
-              onClick={() => router.push(&apos;/dashboard/reading/create&apos;)}
+              onClick={() => router.push('/dashboard/reading/create')}
               className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 flex items-center"
             >
               <Plus className="w-5 h-5 mr-2" />
@@ -135,21 +135,21 @@ export default function ReadingPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex space-x-4">
           <button
-            onClick={() => setFilter(&apos;all&apos;)}
+            onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;all&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'all' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             All Plans
           </button>
           <button
-            onClick={() => setFilter(&apos;my&apos;)}
+            onClick={() => setFilter('my')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;my&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'my' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             My Plans
@@ -163,24 +163,24 @@ export default function ReadingPage() {
           <div className="text-center py-12">
             <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {filter === &apos;my&apos; ? &apos;No reading plans yet&apos; : &apos;No reading plans available&apos;}
+              {filter === 'my' ? 'No reading plans yet' : 'No reading plans available'}
             </h3>
             <p className="text-gray-600 mb-6">
-              {filter === &apos;my&apos; 
-                ? &apos;Join a reading plan to get started!&apos;
-                : &apos;Be the first to create a reading plan!&apos;
+              {filter === 'my' 
+                ? 'Join a reading plan to get started!'
+                : 'Be the first to create a reading plan!'
               }
             </p>
-            {filter === &apos;my&apos; ? (
+            {filter === 'my' ? (
               <button
-                onClick={() => setFilter(&apos;all&apos;)}
+                onClick={() => setFilter('all')}
                 className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700"
               >
                 Browse All Plans
               </button>
             ) : (
               <button
-                onClick={() => router.push(&apos;/dashboard/reading/create&apos;)}
+                onClick={() => router.push('/dashboard/reading/create')}
                 className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700"
               >
                 Create Your First Plan
@@ -204,7 +204,7 @@ export default function ReadingPage() {
                       </p>
                     </div>
                   </div>
-                  {filter === &apos;my&apos; && (
+                  {filter === 'my' && (
                     <div className="flex items-center">
                       <span className="text-sm text-gray-500">
                         {plan.progress_count}/{plan.duration_days} days
@@ -215,7 +215,7 @@ export default function ReadingPage() {
 
                 {/* Description */}
                 <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                  {plan.description || &apos;No description provided&apos;}
+                  {plan.description || 'No description provided'}
                 </p>
 
                 {/* Duration */}
@@ -225,7 +225,7 @@ export default function ReadingPage() {
                 </div>
 
                 {/* Progress Bar (for my plans) */}
-                {filter === &apos;my&apos; && plan.assignment && (
+                {filter === 'my' && plan.assignment && (
                   <div className="mb-4">
                     <div className="flex justify-between text-sm text-gray-600 mb-1">
                       <span>Progress</span>
@@ -248,7 +248,7 @@ export default function ReadingPage() {
 
                 {/* Actions */}
                 <div className="flex space-x-2">
-                  {filter === &apos;my&apos; ? (
+                  {filter === 'my' ? (
                     <button
                       onClick={() => router.push(`/dashboard/reading/${plan.id}`)}
                       className="flex-1 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 text-sm"

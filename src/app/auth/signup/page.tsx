@@ -1,23 +1,23 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import Link from &apos;next/link&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { Eye, EyeOff, Mail, ArrowLeft, Cross } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
+import { ArrowLeft, Cross, Eye, EyeOff, Lock, Mail, User } from 'lucide-react'
 
 export default function SignUpPage() {
   const [formData, setFormData] = useState({
-    firstName: &apos;&apos;,
-    lastName: &apos;&apos;,
-    email: &apos;&apos;,
-    password: &apos;&apos;,
-    confirmPassword: &apos;&apos;
+    firstName: '',
+    lastName: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
   })
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(&apos;&apos;)
+  const [_error, setError] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const router = useRouter()
 
@@ -25,7 +25,7 @@ export default function SignUpPage() {
     // Check if user is already signed in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        router.push(&apos;/dashboard&apos;)
+        router.push('/dashboard')
       }
     })
   }, [router])
@@ -40,16 +40,16 @@ export default function SignUpPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(&apos;&apos;)
+    setError('')
 
     if (formData.password !== formData.confirmPassword) {
-      setError(&apos;Passwords do not match&apos;)
+      setError('Passwords do not match')
       setLoading(false)
       return
     }
 
     if (!agreedToTerms) {
-      setError(&apos;Please agree to the terms and conditions&apos;)
+      setError('Please agree to the terms and conditions')
       setLoading(false)
       return
     }
@@ -72,17 +72,17 @@ export default function SignUpPage() {
         // Create user profile
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
-          await supabase.from(&apos;users&apos;).insert({
+          await supabase.from('users').insert({
             id: user.id,
             email: user.email,
             first_name: formData.firstName,
             last_name: formData.lastName
           })
         }
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
       }
-    } catch (error) {
-      setError(&apos;An unexpected error occurred&apos;)
+    } catch (_error) {
+      setError('An unexpected error occurred')
     } finally {
       setLoading(false)
     }
@@ -120,9 +120,9 @@ export default function SignUpPage() {
         {/* Form */}
         <div className="bg-white py-8 px-6 shadow-xl rounded-2xl">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
+            {_error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-                {error}
+                {_error}
               </div>
             )}
 
@@ -205,7 +205,7 @@ export default function SignUpPage() {
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? &apos;text&apos; : &apos;password&apos;}
+                  type={showPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   required
                   value={formData.password}
@@ -240,7 +240,7 @@ export default function SignUpPage() {
                 <input
                   id="confirmPassword"
                   name="confirmPassword"
-                  type={showConfirmPassword ? &apos;text&apos; : &apos;password&apos;}
+                  type={showConfirmPassword ? 'text' : 'password'}
                   autoComplete="new-password"
                   required
                   value={formData.confirmPassword}
@@ -274,11 +274,11 @@ export default function SignUpPage() {
                 className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
               />
               <label htmlFor="agreedToTerms" className="ml-2 block text-sm text-gray-900">
-                I agree to the{&apos; &apos;}
+                I agree to the{' '}
                 <a href="#" className="text-red-600 hover:text-red-500">
                   Terms and Conditions
-                </a>{&apos; &apos;}
-                and{&apos; &apos;}
+                </a>{' '}
+                and{' '}
                 <a href="#" className="text-red-600 hover:text-red-500">
                   Privacy Policy
                 </a>
@@ -291,13 +291,13 @@ export default function SignUpPage() {
                 disabled={loading}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? &apos;Creating account...&apos; : &apos;Create account&apos;}
+                {loading ? 'Creating account...' : 'Create account'}
               </button>
             </div>
 
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Already have an account?{&apos; &apos;}
+                Already have an account?{' '}
                 <Link 
                   href="/auth/signin" 
                   className="font-medium text-red-600 hover:text-red-500"

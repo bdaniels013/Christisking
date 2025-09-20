@@ -1,24 +1,24 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { Edit, Trash2, MessageCircle, UserPlus } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { Edit, Globe, Lock, MessageCircle, Plus, Search, Settings, Trash2, User, UserPlus, Users } from 'lucide-react'
 
 export default function CirclesPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
-  const [circles, setCircles] = useState<any[]>([])
+  const [_circles, setCircles] = useState<any[]>([])
   const [allCircles, setAllCircles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState(&apos;&apos;)
-  const [filter, setFilter] = useState(&apos;my&apos;) // my, all, public, private
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filter, setFilter] = useState('my') // my, all, public, private
 
   useEffect(() => {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -33,7 +33,7 @@ export default function CirclesPage() {
   const loadMyCircles = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;circle_members&apos;)
+        .from('circle_members')
         .select(`
           circle:circles(
             id, name, description, privacy, created_at,
@@ -42,90 +42,90 @@ export default function CirclesPage() {
             church:churches(name)
           )
         `)
-        .eq(&apos;user_id&apos;, user?.id)
+        .eq('user_id', user?.id)
 
       if (error) throw error
       setCircles(data?.map(item => item.circle) || [])
-    } catch (error) {
-      console.error(&apos;Error loading my circles:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const loadAllCircles = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;circles&apos;)
+        .from('circles')
         .select(`
           id, name, description, privacy, created_at,
           owner:users(first_name, last_name),
           members:circle_members(count),
           church:churches(name)
         `)
-        .eq(&apos;privacy&apos;, &apos;public&apos;)
+        .eq('privacy', 'public')
 
       if (error) throw error
       setAllCircles(data || [])
-    } catch (error) {
-      console.error(&apos;Error loading all circles:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const joinCircle = async (circleId: string) => {
     try {
       const { error } = await supabase
-        .from(&apos;circle_members&apos;)
+        .from('circle_members')
         .insert({
           circle_id: circleId,
           user_id: user.id,
-          role: &apos;member&apos;
+          role: 'member'
         })
 
       if (error) throw error
       loadMyCircles()
       loadAllCircles()
-    } catch (error) {
-      console.error(&apos;Error joining circle:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const leaveCircle = async (circleId: string) => {
     try {
       const { error } = await supabase
-        .from(&apos;circle_members&apos;)
+        .from('circle_members')
         .delete()
-        .eq(&apos;circle_id&apos;, circleId)
-        .eq(&apos;user_id&apos;, user.id)
+        .eq('circle_id', circleId)
+        .eq('user_id', user.id)
 
       if (error) throw error
       loadMyCircles()
       loadAllCircles()
-    } catch (error) {
-      console.error(&apos;Error leaving circle:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const deleteCircle = async (circleId: string) => {
-    if (!confirm(&apos;Are you sure you want to delete this circle?&apos;)) return
+    if (!confirm('Are you sure you want to delete this circle?')) return
 
     try {
       const { error } = await supabase
-        .from(&apos;circles&apos;)
+        .from('circles')
         .delete()
-        .eq(&apos;id&apos;, circleId)
+        .eq('id', circleId)
 
       if (error) throw error
       loadMyCircles()
       loadAllCircles()
-    } catch (error) {
-      console.error(&apos;Error deleting circle:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const isMember = (circleId: string) => {
-    return circles.some(circle => circle.id === circleId)
+    return _circles.some(circle => circle.id === circleId)
   }
 
-  const filteredCircles = (filter === &apos;my&apos; ? circles : allCircles).filter(circle =>
+  const filteredCircles = (filter === 'my' ? _circles : allCircles).filter(circle =>
     circle.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     circle.description?.toLowerCase().includes(searchTerm.toLowerCase())
   )
@@ -152,7 +152,7 @@ export default function CirclesPage() {
               <p className="text-gray-600">Connect with faith-based communities</p>
             </div>
             <button
-              onClick={() => router.push(&apos;/dashboard/circles/create&apos;)}
+              onClick={() => router.push('/dashboard/circles/create')}
               className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 flex items-center"
             >
               <Plus className="w-5 h-5 mr-2" />
@@ -182,21 +182,21 @@ export default function CirclesPage() {
           {/* Filters */}
           <div className="flex space-x-2">
             <button
-              onClick={() => setFilter(&apos;my&apos;)}
+              onClick={() => setFilter('my')}
               className={`px-4 py-3 rounded-lg ${
-                filter === &apos;my&apos; 
-                  ? &apos;bg-red-600 text-white&apos; 
-                  : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+                filter === 'my' 
+                  ? 'bg-red-600 text-white' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
               My Circles
             </button>
             <button
-              onClick={() => setFilter(&apos;all&apos;)}
+              onClick={() => setFilter('all')}
               className={`px-4 py-3 rounded-lg ${
-                filter === &apos;all&apos; 
-                  ? &apos;bg-red-600 text-white&apos; 
-                  : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+                filter === 'all' 
+                  ? 'bg-red-600 text-white' 
+                  : 'bg-white text-gray-700 hover:bg-gray-50'
               }`}
             >
               Browse All
@@ -211,17 +211,17 @@ export default function CirclesPage() {
           <div className="text-center py-12">
             <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {filter === &apos;my&apos; ? &apos;No circles yet&apos; : &apos;No circles found&apos;}
+              {filter === 'my' ? 'No circles yet' : 'No circles found'}
             </h3>
             <p className="text-gray-600 mb-6">
-              {filter === &apos;my&apos; 
-                ? &apos;Create your first circle or join existing ones!&apos;
-                : &apos;Try adjusting your search terms&apos;
+              {filter === 'my' 
+                ? 'Create your first circle or join existing ones!'
+                : 'Try adjusting your search terms'
               }
             </p>
-            {filter === &apos;my&apos; && (
+            {filter === 'my' && (
               <button
-                onClick={() => router.push(&apos;/dashboard/circles/create&apos;)}
+                onClick={() => router.push('/dashboard/circles/create')}
                 className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700"
               >
                 Create Your First Circle
@@ -246,7 +246,7 @@ export default function CirclesPage() {
                     </div>
                   </div>
                   <div className="flex items-center space-x-1">
-                    {circle.privacy === &apos;private&apos; ? (
+                    {circle.privacy === 'private' ? (
                       <Lock className="w-4 h-4 text-gray-400" />
                     ) : (
                       <Globe className="w-4 h-4 text-green-500" />
@@ -272,7 +272,7 @@ export default function CirclesPage() {
 
                 {/* Description */}
                 <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                  {circle.description || &apos;No description provided&apos;}
+                  {circle.description || 'No description provided'}
                 </p>
 
                 {/* Church */}

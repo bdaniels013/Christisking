@@ -1,23 +1,23 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { Heart, Edit, Trash2, AlertCircle, MessageCircle } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { AlertCircle, CheckCircle, Edit, Heart, MessageCircle, Plus, Trash2 } from 'lucide-react'
 
 export default function PrayerPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [prayers, setPrayers] = useState<any[]>([])
-  const [circles, setCircles] = useState<any[]>([])
+  const [_circles, setCircles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState(&apos;all&apos;) // all, active, answered, urgent
+  const [filter, setFilter] = useState('all') // all, active, answered, urgent
 
   useEffect(() => {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -32,7 +32,7 @@ export default function PrayerPage() {
   const loadPrayers = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;prayer_requests&apos;)
+        .from('prayer_requests')
         .select(`
           *,
           author:users(first_name, last_name, avatar_url),
@@ -40,33 +40,33 @@ export default function PrayerPage() {
           supporters:prayer_support(count),
           support:prayer_support(user_id)
         `)
-        .order(&apos;created_at&apos;, { ascending: false })
+        .order('created_at', { ascending: false })
 
       if (error) throw error
       setPrayers(data || [])
-    } catch (error) {
-      console.error(&apos;Error loading prayers:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const loadCircles = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;circle_members&apos;)
-        .select(&apos;circle:circles(id, name)&apos;)
-        .eq(&apos;user_id&apos;, user?.id)
+        .from('circle_members')
+        .select('circle:circles(id, name)')
+        .eq('user_id', user?.id)
 
       if (error) throw error
       setCircles(data?.map(item => item.circle) || [])
-    } catch (error) {
-      console.error(&apos;Error loading circles:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const handleSupport = async (prayerId: string) => {
     try {
       const { error } = await supabase
-        .from(&apos;prayer_support&apos;)
+        .from('prayer_support')
         .upsert({
           prayer_id: prayerId,
           user_id: user.id
@@ -74,50 +74,50 @@ export default function PrayerPage() {
 
       if (error) throw error
       loadPrayers()
-    } catch (error) {
-      console.error(&apos;Error supporting prayer:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const handleDelete = async (prayerId: string) => {
-    if (!confirm(&apos;Are you sure you want to delete this prayer request?&apos;)) return
+    if (!confirm('Are you sure you want to delete this prayer request?')) return
 
     try {
       const { error } = await supabase
-        .from(&apos;prayer_requests&apos;)
+        .from('prayer_requests')
         .delete()
-        .eq(&apos;id&apos;, prayerId)
+        .eq('id', prayerId)
 
       if (error) throw error
       loadPrayers()
-    } catch (error) {
-      console.error(&apos;Error deleting prayer:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const handleStatusChange = async (prayerId: string, status: string) => {
     try {
       const { error } = await supabase
-        .from(&apos;prayer_requests&apos;)
+        .from('prayer_requests')
         .update({ status })
-        .eq(&apos;id&apos;, prayerId)
+        .eq('id', prayerId)
 
       if (error) throw error
       loadPrayers()
-    } catch (error) {
-      console.error(&apos;Error updating prayer status:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
-  const isSupporting = (prayer: any // eslint-disable-line @typescript-eslint/no-explicit-any) => {
-    return prayer.support?.some((s: any // eslint-disable-line @typescript-eslint/no-explicit-any) => s.user_id === user?.id)
+  const isSupporting = (prayer: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    return prayer.support?.some((s: any) => s.user_id === user?.id) // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
   const filteredPrayers = prayers.filter(prayer => {
-    if (filter === &apos;all&apos;) return true
-    if (filter === &apos;active&apos;) return prayer.status === &apos;active&apos;
-    if (filter === &apos;answered&apos;) return prayer.status === &apos;answered&apos;
-    if (filter === &apos;urgent&apos;) return prayer.is_urgent
+    if (filter === 'all') return true
+    if (filter === 'active') return prayer.status === 'active'
+    if (filter === 'answered') return prayer.status === 'answered'
+    if (filter === 'urgent') return prayer.is_urgent
     return true
   })
 
@@ -143,7 +143,7 @@ export default function PrayerPage() {
               <p className="text-gray-600">Share prayer needs and support others</p>
             </div>
             <button
-              onClick={() => router.push(&apos;/dashboard/prayer/create&apos;)}
+              onClick={() => router.push('/dashboard/prayer/create')}
               className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 flex items-center"
             >
               <Plus className="w-5 h-5 mr-2" />
@@ -157,41 +157,41 @@ export default function PrayerPage() {
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex space-x-4">
           <button
-            onClick={() => setFilter(&apos;all&apos;)}
+            onClick={() => setFilter('all')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;all&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'all' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             All
           </button>
           <button
-            onClick={() => setFilter(&apos;active&apos;)}
+            onClick={() => setFilter('active')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;active&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'active' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             Active
           </button>
           <button
-            onClick={() => setFilter(&apos;answered&apos;)}
+            onClick={() => setFilter('answered')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;answered&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'answered' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             Answered
           </button>
           <button
-            onClick={() => setFilter(&apos;urgent&apos;)}
+            onClick={() => setFilter('urgent')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;urgent&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'urgent' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             Urgent
@@ -207,7 +207,7 @@ export default function PrayerPage() {
             <h3 className="text-lg font-medium text-gray-900 mb-2">No prayer requests yet</h3>
             <p className="text-gray-600 mb-6">Be the first to share a prayer request!</p>
             <button
-              onClick={() => router.push(&apos;/dashboard/prayer/create&apos;)}
+              onClick={() => router.push('/dashboard/prayer/create')}
               className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700"
             >
               Share Your First Prayer Request
@@ -222,7 +222,7 @@ export default function PrayerPage() {
                   <div className="flex items-center">
                     <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
                       <span className="text-sm font-medium text-red-600">
-                        {prayer.author?.first_name?.[0] || &apos;U&apos;}
+                        {prayer.author?.first_name?.[0] || 'U'}
                       </span>
                     </div>
                     <div className="ml-3">
@@ -243,11 +243,11 @@ export default function PrayerPage() {
                       </span>
                     )}
                     <span className={`px-2 py-1 text-xs rounded-full ${
-                      prayer.status === &apos;active&apos; 
-                        ? &apos;bg-yellow-100 text-yellow-800&apos;
-                        : prayer.status === &apos;answered&apos;
-                        ? &apos;bg-green-100 text-green-800&apos;
-                        : &apos;bg-gray-100 text-gray-800&apos;
+                      prayer.status === 'active' 
+                        ? 'bg-yellow-100 text-yellow-800'
+                        : prayer.status === 'answered'
+                        ? 'bg-green-100 text-green-800'
+                        : 'bg-gray-100 text-gray-800'
                     }`}>
                       {prayer.status}
                     </span>
@@ -287,8 +287,8 @@ export default function PrayerPage() {
                       onClick={() => handleSupport(prayer.id)}
                       className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-colors ${
                         isSupporting(prayer)
-                          ? &apos;bg-red-100 text-red-700&apos;
-                          : &apos;text-gray-500 hover:text-red-600 hover:bg-red-50&apos;
+                          ? 'bg-red-100 text-red-700'
+                          : 'text-gray-500 hover:text-red-600 hover:bg-red-50'
                       }`}
                     >
                       <Heart className="w-5 h-5" />
@@ -300,9 +300,9 @@ export default function PrayerPage() {
                     </button>
                   </div>
                   
-                  {prayer.author_id === user?.id && prayer.status === &apos;active&apos; && (
+                  {prayer.author_id === user?.id && prayer.status === 'active' && (
                     <button
-                      onClick={() => handleStatusChange(prayer.id, &apos;answered&apos;)}
+                      onClick={() => handleStatusChange(prayer.id, 'answered')}
                       className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 text-sm flex items-center"
                     >
                       <CheckCircle className="w-4 h-4 mr-2" />

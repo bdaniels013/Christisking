@@ -1,23 +1,23 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { Edit, Trash2, MapPin, XCircle } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { Calendar, CheckCircle, Clock, Edit, MapPin, Plus, Trash2, XCircle } from 'lucide-react'
 
 export default function EventsPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [events, setEvents] = useState<any[]>([])
-  const [circles, setCircles] = useState<any[]>([])
+  const [_circles, setCircles] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [filter, setFilter] = useState(&apos;upcoming&apos;) // upcoming, past, my
+  const [filter, setFilter] = useState('upcoming') // upcoming, past, my
 
   useEffect(() => {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -32,7 +32,7 @@ export default function EventsPage() {
   const loadEvents = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;events&apos;)
+        .from('events')
         .select(`
           *,
           organizer:users(first_name, last_name, avatar_url),
@@ -41,33 +41,33 @@ export default function EventsPage() {
           attendees:event_attendees(count),
           my_attendance:event_attendees(status, user_id)
         `)
-        .order(&apos;event_date&apos;, { ascending: true })
+        .order('event_date', { ascending: true })
 
       if (error) throw error
       setEvents(data || [])
-    } catch (error) {
-      console.error(&apos;Error loading events:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const loadCircles = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;circle_members&apos;)
-        .select(&apos;circle:circles(id, name)&apos;)
-        .eq(&apos;user_id&apos;, user?.id)
+        .from('circle_members')
+        .select('circle:circles(id, name)')
+        .eq('user_id', user?.id)
 
       if (error) throw error
       setCircles(data?.map(item => item.circle) || [])
-    } catch (error) {
-      console.error(&apos;Error loading circles:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const handleRSVP = async (eventId: string, status: string) => {
     try {
       const { error } = await supabase
-        .from(&apos;event_attendees&apos;)
+        .from('event_attendees')
         .upsert({
           event_id: eventId,
           user_id: user.id,
@@ -76,38 +76,38 @@ export default function EventsPage() {
 
       if (error) throw error
       loadEvents()
-    } catch (error) {
-      console.error(&apos;Error updating RSVP:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const handleDelete = async (eventId: string) => {
-    if (!confirm(&apos;Are you sure you want to delete this event?&apos;)) return
+    if (!confirm('Are you sure you want to delete this event?')) return
 
     try {
       const { error } = await supabase
-        .from(&apos;events&apos;)
+        .from('events')
         .delete()
-        .eq(&apos;id&apos;, eventId)
+        .eq('id', eventId)
 
       if (error) throw error
       loadEvents()
-    } catch (error) {
-      console.error(&apos;Error deleting event:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
-  const getMyAttendance = (event: any // eslint-disable-line @typescript-eslint/no-explicit-any) => {
-    return event.my_attendance?.find((attendance: any // eslint-disable-line @typescript-eslint/no-explicit-any) => attendance.user_id === user?.id)?.status
+  const getMyAttendance = (event: any) => { // eslint-disable-line @typescript-eslint/no-explicit-any
+    return event.my_attendance?.find((attendance: any) => attendance.user_id === user?.id)?.status // eslint-disable-line @typescript-eslint/no-explicit-any
   }
 
   const filteredEvents = events.filter(event => {
     const now = new Date()
     const eventDate = new Date(event.event_date)
     
-    if (filter === &apos;upcoming&apos;) return eventDate >= now
-    if (filter === &apos;past&apos;) return eventDate < now
-    if (filter === &apos;my&apos;) return event.organizer_id === user?.id
+    if (filter === 'upcoming') return eventDate >= now
+    if (filter === 'past') return eventDate < now
+    if (filter === 'my') return event.organizer_id === user?.id
     return true
   })
 
@@ -133,7 +133,7 @@ export default function EventsPage() {
               <p className="text-gray-600">Discover and create community events</p>
             </div>
             <button
-              onClick={() => router.push(&apos;/dashboard/events/create&apos;)}
+              onClick={() => router.push('/dashboard/events/create')}
               className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 flex items-center"
             >
               <Plus className="w-5 h-5 mr-2" />
@@ -147,31 +147,31 @@ export default function EventsPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div className="flex space-x-4">
           <button
-            onClick={() => setFilter(&apos;upcoming&apos;)}
+            onClick={() => setFilter('upcoming')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;upcoming&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'upcoming' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             Upcoming
           </button>
           <button
-            onClick={() => setFilter(&apos;past&apos;)}
+            onClick={() => setFilter('past')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;past&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'past' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             Past
           </button>
           <button
-            onClick={() => setFilter(&apos;my&apos;)}
+            onClick={() => setFilter('my')}
             className={`px-4 py-2 rounded-lg ${
-              filter === &apos;my&apos; 
-                ? &apos;bg-red-600 text-white&apos; 
-                : &apos;bg-white text-gray-700 hover:bg-gray-50&apos;
+              filter === 'my' 
+                ? 'bg-red-600 text-white' 
+                : 'bg-white text-gray-700 hover:bg-gray-50'
             }`}
           >
             My Events
@@ -185,18 +185,18 @@ export default function EventsPage() {
           <div className="text-center py-12">
             <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {filter === &apos;upcoming&apos; ? &apos;No upcoming events&apos; : 
-               filter === &apos;past&apos; ? &apos;No past events&apos; : &apos;No events created yet&apos;}
+              {filter === 'upcoming' ? 'No upcoming events' : 
+               filter === 'past' ? 'No past events' : 'No events created yet'}
             </h3>
             <p className="text-gray-600 mb-6">
-              {filter === &apos;my&apos; 
-                ? &apos;Create your first event!&apos;
-                : &apos;Check back later for new events&apos;
+              {filter === 'my' 
+                ? 'Create your first event!'
+                : 'Check back later for new events'
               }
             </p>
-            {filter === &apos;my&apos; && (
+            {filter === 'my' && (
               <button
-                onClick={() => router.push(&apos;/dashboard/events/create&apos;)}
+                onClick={() => router.push('/dashboard/events/create')}
                 className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700"
               >
                 Create Your First Event
@@ -240,13 +240,13 @@ export default function EventsPage() {
 
                 {/* Description */}
                 <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                  {event.description || &apos;No description provided&apos;}
+                  {event.description || 'No description provided'}
                 </p>
 
                 {/* Date & Time */}
                 <div className="flex items-center text-sm text-gray-500 mb-2">
                   <Clock className="w-4 h-4 mr-2" />
-                  {new Date(event.event_date).toLocaleDateString()} at {new Date(event.event_date).toLocaleTimeString([], {hour: &apos;2-digit&apos;, minute:&apos;2-digit&apos;})}
+                  {new Date(event.event_date).toLocaleDateString()} at {new Date(event.event_date).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}
                 </div>
 
                 {/* Location */}
@@ -276,9 +276,9 @@ export default function EventsPage() {
                 {/* RSVP Actions */}
                 {event.organizer_id !== user?.id && (
                   <div className="flex space-x-2">
-                    {getMyAttendance(event) === &apos;attending&apos; ? (
+                    {getMyAttendance(event) === 'attending' ? (
                       <button
-                        onClick={() => handleRSVP(event.id, &apos;not_attending&apos;)}
+                        onClick={() => handleRSVP(event.id, 'not_attending')}
                         className="flex-1 bg-red-100 text-red-700 px-4 py-2 rounded-lg hover:bg-red-200 text-sm flex items-center justify-center"
                       >
                         <XCircle className="w-4 h-4 mr-2" />
@@ -286,7 +286,7 @@ export default function EventsPage() {
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleRSVP(event.id, &apos;attending&apos;)}
+                        onClick={() => handleRSVP(event.id, 'attending')}
                         className="flex-1 bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 text-sm flex items-center justify-center"
                       >
                         <CheckCircle className="w-4 h-4 mr-2" />
@@ -294,7 +294,7 @@ export default function EventsPage() {
                       </button>
                     )}
                     <button
-                      onClick={() => handleRSVP(event.id, &apos;maybe&apos;)}
+                      onClick={() => handleRSVP(event.id, 'maybe')}
                       className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 text-sm"
                     >
                       Maybe

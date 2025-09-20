@@ -1,19 +1,19 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { ArrowLeft } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { ArrowLeft, Globe, Lock, User, Users } from 'lucide-react'
 
 export default function CreateCirclePage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [loading, setLoading] = useState(false)
   const [formData, setFormData] = useState({
-    name: &apos;&apos;,
-    description: &apos;&apos;,
-    privacy: &apos;public&apos;,
-    church_id: &apos;&apos;
+    name: '',
+    description: '',
+    privacy: 'public',
+    church_id: ''
   })
   const [churches, setChurches] = useState<any[]>([])
 
@@ -21,7 +21,7 @@ export default function CreateCirclePage() {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -35,14 +35,14 @@ export default function CreateCirclePage() {
   const loadChurches = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;churches&apos;)
-        .select(&apos;id, name, city, state&apos;)
-        .order(&apos;name&apos;)
+        .from('churches')
+        .select('id, name, city, state')
+        .order('name')
 
       if (error) throw error
       setChurches(data || [])
-    } catch (error) {
-      console.error(&apos;Error loading churches:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
@@ -53,7 +53,7 @@ export default function CreateCirclePage() {
     setLoading(true)
     try {
       const { data, error } = await supabase
-        .from(&apos;circles&apos;)
+        .from('circles')
         .insert({
           name: formData.name,
           description: formData.description,
@@ -68,17 +68,17 @@ export default function CreateCirclePage() {
 
       // Add creator as owner
       await supabase
-        .from(&apos;circle_members&apos;)
+        .from('circle_members')
         .insert({
           circle_id: data.id,
           user_id: user.id,
-          role: &apos;owner&apos;
+          role: 'owner'
         })
 
-      router.push(&apos;/dashboard/circles&apos;)
-    } catch (error) {
-      console.error(&apos;Error creating circle:&apos;, error)
-      alert(&apos;Error creating circle. Please try again.&apos;)
+      router.push('/dashboard/circles')
+    } catch (_error) {
+      console.error('Error:', _error)
+      alert('Error creating circle. Please try again.')
     } finally {
       setLoading(false)
     }
@@ -150,7 +150,7 @@ export default function CreateCirclePage() {
                     type="radio"
                     name="privacy"
                     value="public"
-                    checked={formData.privacy === &apos;public&apos;}
+                    checked={formData.privacy === 'public'}
                     onChange={(e) => setFormData({ ...formData, privacy: e.target.value })}
                     className="mr-3"
                   />
@@ -166,7 +166,7 @@ export default function CreateCirclePage() {
                     type="radio"
                     name="privacy"
                     value="private"
-                    checked={formData.privacy === &apos;private&apos;}
+                    checked={formData.privacy === 'private'}
                     onChange={(e) => setFormData({ ...formData, privacy: e.target.value })}
                     className="mr-3"
                   />
@@ -214,7 +214,7 @@ export default function CreateCirclePage() {
                 className="px-6 py-3 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center"
               >
                 {loading ? (
-                  &apos;Creating...&apos;
+                  'Creating...'
                 ) : (
                   <>
                     <Users className="w-4 h-4 mr-2" />

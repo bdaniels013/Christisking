@@ -1,24 +1,24 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import Link from &apos;next/link&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { Eye, EyeOff, Mail, ArrowLeft, Cross } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import Link from 'next/link'
+import { supabase } from '@/lib/supabase'
+import { ArrowLeft, Cross, Eye, EyeOff, Lock, Mail } from 'lucide-react'
 
 export default function SignInPage() {
-  const [email, setEmail] = useState(&apos;&apos;)
-  const [password, setPassword] = useState(&apos;&apos;)
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState(&apos;&apos;)
+  const [_error, setError] = useState('')
   const router = useRouter()
 
   useEffect(() => {
     // Check if user is already signed in
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
-        router.push(&apos;/dashboard&apos;)
+        router.push('/dashboard')
       }
     })
   }, [router])
@@ -26,7 +26,7 @@ export default function SignInPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)
-    setError(&apos;&apos;)
+    setError('')
 
     try {
       const { error } = await supabase.auth.signInWithPassword({
@@ -37,10 +37,10 @@ export default function SignInPage() {
       if (error) {
         setError(error.message)
       } else {
-        router.push(&apos;/dashboard&apos;)
+        router.push('/dashboard')
       }
-    } catch (error) {
-      setError(&apos;An unexpected error occurred&apos;)
+    } catch (_error) {
+      setError('An unexpected error occurred')
     } finally {
       setLoading(false)
     }
@@ -78,9 +78,9 @@ export default function SignInPage() {
         {/* Form */}
         <div className="bg-white py-8 px-6 shadow-xl rounded-2xl">
           <form className="space-y-6" onSubmit={handleSubmit}>
-            {error && (
+            {_error && (
               <div className="bg-red-50 border border-red-200 text-red-600 px-4 py-3 rounded-lg">
-                {error}
+                {_error}
               </div>
             )}
 
@@ -117,7 +117,7 @@ export default function SignInPage() {
                 <input
                   id="password"
                   name="password"
-                  type={showPassword ? &apos;text&apos; : &apos;password&apos;}
+                  type={showPassword ? 'text' : 'password'}
                   autoComplete="current-password"
                   required
                   value={password}
@@ -147,13 +147,13 @@ export default function SignInPage() {
                 disabled={loading}
                 className="w-full flex justify-center py-3 px-4 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? &apos;Signing in...&apos; : &apos;Sign in&apos;}
+                {loading ? 'Signing in...' : 'Sign in'}
               </button>
             </div>
 
             <div className="text-center">
               <p className="text-sm text-gray-600">
-                Don&apos;t have an account?{&apos; &apos;}
+                Don&apos;t have an account?{' '}
                 <Link 
                   href="/auth/signup" 
                   className="font-medium text-red-600 hover:text-red-500"

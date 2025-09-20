@@ -1,22 +1,22 @@
-&apos;use client&apos;
+'use client'
 
-import { useState, useEffect } from &apos;react&apos;
-import { useRouter } from &apos;next/navigation&apos;
-import { supabase } from &apos;@/lib/supabase&apos;
-import { Church, MapPin, Phone, Mail, Edit, Trash2 } from 'lucide-react';lucide-react&apos;
+import { useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
+import { supabase } from '@/lib/supabase'
+import { Church, Clock, Edit, Globe, Mail, MapPin, Phone, Plus, Search, Trash2 } from 'lucide-react'
 
 export default function ChurchesPage() {
   const router = useRouter()
   const [user, setUser] = useState<any>(null)
   const [churches, setChurches] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
-  const [searchTerm, setSearchTerm] = useState(&apos;&apos;)
+  const [searchTerm, setSearchTerm] = useState('')
 
   useEffect(() => {
     const loadData = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       if (!session?.user) {
-        router.push(&apos;/auth/signin&apos;)
+        router.push('/auth/signin')
         return
       }
       
@@ -31,33 +31,33 @@ export default function ChurchesPage() {
   const loadChurches = async () => {
     try {
       const { data, error } = await supabase
-        .from(&apos;churches&apos;)
+        .from('churches')
         .select(`
           *,
           created_by_user:users(first_name, last_name)
         `)
-        .order(&apos;name&apos;)
+        .order('name')
 
       if (error) throw error
       setChurches(data || [])
-    } catch (error) {
-      console.error(&apos;Error loading churches:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
   const handleDelete = async (churchId: string) => {
-    if (!confirm(&apos;Are you sure you want to delete this church?&apos;)) return
+    if (!confirm('Are you sure you want to delete this church?')) return
 
     try {
       const { error } = await supabase
-        .from(&apos;churches&apos;)
+        .from('churches')
         .delete()
-        .eq(&apos;id&apos;, churchId)
+        .eq('id', churchId)
 
       if (error) throw error
       loadChurches()
-    } catch (error) {
-      console.error(&apos;Error deleting church:&apos;, error)
+    } catch (_error) {
+      console.error('Error:', _error)
     }
   }
 
@@ -89,7 +89,7 @@ export default function ChurchesPage() {
               <p className="text-gray-600">Discover local churches and communities</p>
             </div>
             <button
-              onClick={() => router.push(&apos;/dashboard/churches/new&apos;)}
+              onClick={() => router.push('/dashboard/churches/new')}
               className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700 flex items-center"
             >
               <Plus className="w-5 h-5 mr-2" />
@@ -119,17 +119,17 @@ export default function ChurchesPage() {
           <div className="text-center py-12">
             <Church className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
-              {searchTerm ? &apos;No churches found&apos; : &apos;No churches yet&apos;}
+              {searchTerm ? 'No churches found' : 'No churches yet'}
             </h3>
             <p className="text-gray-600 mb-6">
               {searchTerm 
-                ? &apos;Try adjusting your search terms&apos;
-                : &apos;Be the first to add a church!&apos;
+                ? 'Try adjusting your search terms'
+                : 'Be the first to add a church!'
               }
             </p>
             {!searchTerm && (
               <button
-                onClick={() => router.push(&apos;/dashboard/churches/new&apos;)}
+                onClick={() => router.push('/dashboard/churches/new')}
                 className="bg-red-600 text-white px-6 py-3 rounded-lg hover:bg-red-700"
               >
                 Add Your First Church

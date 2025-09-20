@@ -41,8 +41,8 @@ export default function HomePage() {
       } else {
         setMessage('Success! Check your email to verify your account.')
       }
-    } catch (error) {
-      setMessage('Error: ' + error)
+    } catch (_error) {
+      setMessage('Error: ' + _error)
     }
     
     setLoading(false)
@@ -63,8 +63,8 @@ export default function HomePage() {
       } else {
         setMessage('Successfully signed in!')
       }
-    } catch (error) {
-      setMessage('Error: ' + error)
+    } catch (_error) {
+      setMessage('Error: ' + _error)
     }
     
     setLoading(false)
@@ -90,8 +90,8 @@ export default function HomePage() {
       } else {
         setMessage('Database working! Found ' + (data?.length || 0) + ' circles.')
       }
-    } catch (error) {
-      setMessage('Database Error: ' + error)
+    } catch (_error) {
+      setMessage('Database Error: ' + _error)
     }
     
     setLoading(false)
